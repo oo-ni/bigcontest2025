@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bigcontest2025-streamlit
+    volumes:
+      - .:/app
+      - /app/.venv  # 로컬 .venv를 마운트하지 않음
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8501:8501"
+    stdin_open: true
+    tty: true

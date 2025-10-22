@@ -30,10 +30,31 @@ def render_sidebar_settings() -> dict:
             "Temperature", min_value=0.0, max_value=2.0, value=0.7, step=0.1
         )
 
-        if st.button("대화 초기화"):
-            return {"temperature": temperature, "clear": True}
+        # RAG 설정
+        st.divider()
+        st.subheader("RAG 설정")
+        use_rag = st.checkbox(
+            "RAG 활성화",
+            value=st.session_state.get("use_rag", True),
+            help="문서 검색 기반 답변 생성"
+        )
 
-        return {"temperature": temperature, "clear": False}
+        # RAG 상태 표시
+        if "rag_client" in st.session_state:
+            rag_client = st.session_state.rag_client
+            if rag_client.is_available():
+                st.success("✅ MCP 서버 연결됨")
+                stats = rag_client.get_stats()
+                if stats:
+                    st.metric("문서 수", stats.get("total_documents", 0))
+            else:
+                st.error("❌ MCP 서버 연결 실패")
+
+        st.divider()
+        if st.button("대화 초기화"):
+            return {"temperature": temperature, "use_rag": use_rag, "clear": True}
+
+        return {"temperature": temperature, "use_rag": use_rag, "clear": False}
 
 
 def render_page_config() -> None:

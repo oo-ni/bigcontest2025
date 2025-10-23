@@ -11,6 +11,8 @@ class Config:
         self._api_key: Optional[str] = None
         self._model_name: str = "gemini-2.5-flash"
         self._temperature: float = 0.7
+        self._mcp_server_url: str = os.getenv("MCP_SERVER_URL", "http://localhost:8000")
+        self._use_rag: bool = os.getenv("USE_RAG", "true").lower() == "true"
 
     def get_api_key(self) -> str:
         """Get Gemini API key from environment"""
@@ -34,3 +36,11 @@ class Config:
         if not 0.0 <= temperature <= 2.0:
             raise ValueError("Temperature must be between 0.0 and 2.0")
         self._temperature = temperature
+
+    def get_mcp_server_url(self) -> str:
+        """Get MCP server URL"""
+        return self._mcp_server_url
+
+    def get_use_rag(self) -> bool:
+        """Get RAG usage setting"""
+        return self._use_rag

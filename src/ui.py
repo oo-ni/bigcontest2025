@@ -60,8 +60,8 @@ def render_sidebar_settings() -> dict:
 def render_page_config() -> None:
     """Configure Streamlit page settings"""
     st.set_page_config(
-        page_title="BigContest 2025",
-        page_icon="💬",
+        page_title="MODA - My Own Data Assistant",
+        page_icon="🤖",
         layout="centered",
         initial_sidebar_state="expanded",
     )
@@ -69,44 +69,15 @@ def render_page_config() -> None:
 
 def render_header() -> None:
     """Render page header"""
-    st.title("BigContest 2025")
-    st.caption("소상공인 마케팅 전략 추천 챗봇")
+    st.title("🤖 MODA")
+    st.caption("My Own Data Assistant - 소상공인 마케팅 전략 추천")
 
 
 def render_competition_questions() -> Optional[dict]:
     """
-    Render competition question buttons
+    Render competition question buttons (removed - users can ask directly)
 
     Returns:
-        dict with 'question_type' and 'filters' if button clicked, None otherwise
+        None
     """
-    st.subheader("📋 평가 문항 (B)")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if st.button("🏪 B-1: 카페 고객 분석", use_container_width=True):
-            return {
-                "question_type": "cafe_customer",
-                "prompt": "카페 업종 가맹점의 주요 방문 고객 특성을 분석하고, 적합한 마케팅 채널과 홍보안을 제시해주세요.",
-                "filters": {"업종": "카페"}
-            }
-
-    with col2:
-        if st.button("🔄 B-2: 재방문율 향상", use_container_width=True):
-            return {
-                "question_type": "revisit_rate",
-                "prompt": "재방문율이 낮은 가맹점의 문제점을 분석하고, 재방문율을 높일 수 있는 구체적인 마케팅 전략을 제시해주세요.",
-                "filters": None
-            }
-
-    with col3:
-        if st.button("🍽️ B-3: 요식업 문제 분석", use_container_width=True):
-            return {
-                "question_type": "restaurant_problem",
-                "prompt": "요식업 가맹점의 현재 가장 큰 문제점을 데이터 기반으로 분석하고, 이를 해결할 마케팅 아이디어를 제시해주세요.",
-                "filters": {"업종": "요식업"}
-            }
-
-    st.divider()
     return None

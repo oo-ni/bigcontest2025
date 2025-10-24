@@ -26,11 +26,15 @@ MANIFEST
 .env
 .env.*
 .venv
+.venv_temp/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Vector Store (large files)
+vector_store/
 
 # uv
 .uv/

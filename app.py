@@ -83,7 +83,7 @@ def handle_user_input(user_input: str, question_type: str = None, filters: dict 
                 rag_results = rag_client.query(
                     user_input,
                     top_k=5,
-                    threshold=0.5,
+                    threshold=0.1,  # Lowered threshold for better recall
                     filters=filters
                 )
 

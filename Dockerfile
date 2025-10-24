@@ -6,11 +6,14 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-# 의존성 파일만 먼저 복사 (Docker 캐싱 활용)
+# 의존성 파일과 소스 코드 복사
 COPY pyproject.toml uv.lock* ./
+COPY src/ ./src/
+COPY app.py ./
 
-# 의존성 설치 (프로덕션 전용)
-RUN uv sync --no-dev
+# Python 가상환경 생성 및 의존성 설치
+RUN uv venv && \
+    uv pip install .
 
 # 런타임 스테이지
 FROM python:3.11-slim

@@ -11,11 +11,14 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# 의존성 파일만 먼저 복사
+# 의존성 파일과 소스 코드 복사
 COPY pyproject.toml uv.lock* ./
+COPY mcp_server/ ./mcp_server/
+COPY src/ ./src/
 
-# 의존성 설치
-RUN uv sync --no-dev
+# Python 가상환경 생성 및 의존성 설치
+RUN uv venv && \
+    uv pip install .
 
 # 런타임 스테이지
 FROM python:3.11-slim

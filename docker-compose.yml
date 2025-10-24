@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.mcp
     container_name: bigcontest2025-mcp
-    image: your-dockerhub-username/bigcontest2025-mcp:latest
+    image: ${DOCKERHUB_USERNAME}/bigcontest2025-mcp:latest
     volumes:
       - ./vector_store:/app/vector_store
       - ./data:/app/data
@@ -21,16 +21,15 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: bigcontest2025-streamlit
-    image: your-dockerhub-username/bigcontest2025-streamlit:latest
+    image: ${DOCKERHUB_USERNAME}/bigcontest2025-streamlit:latest
     volumes:
       - .:/app
       - /app/.venv  # 로컬 .venv를 마운트하지 않음
     environment:
       - PYTHONUNBUFFERED=1
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - MCP_SERVER_URL=http://mcp-server:8000
       - USE_RAG=true
-    env_file:
-      - .env.dev
     ports:
       - "8501:8501"
     depends_on:

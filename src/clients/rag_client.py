@@ -36,7 +36,8 @@ class RAGClient:
         self,
         query: str,
         top_k: int = 5,
-        threshold: float = 0.7
+        threshold: float = 0.7,
+        filters: Optional[Dict] = None
     ) -> List[Dict]:
         """
         Query the RAG system for relevant documents
@@ -45,18 +46,24 @@ class RAGClient:
             query: Search query
             top_k: Number of results to return
             threshold: Similarity threshold
+            filters: Optional metadata filters (e.g., {"업종": "카페"})
 
         Returns:
             List of relevant documents with scores
         """
         try:
+            payload = {
+                "query": query,
+                "top_k": top_k,
+                "threshold": threshold
+            }
+
+            if filters:
+                payload["filters"] = filters
+
             response = requests.post(
                 f"{self.server_url}/query",
-                json={
-                    "query": query,
-                    "top_k": top_k,
-                    "threshold": threshold
-                },
+                json=payload,
                 timeout=30
             )
 

@@ -14,6 +14,7 @@ from src.ui import (
     render_chat_history,
     render_input_box,
     render_chat_message,
+    render_competition_questions,
 )
 
 load_dotenv()
@@ -54,8 +55,14 @@ def handle_settings(settings: dict) -> None:
         st.session_state.use_rag = settings["use_rag"]
 
 
-def handle_user_input(user_input: str) -> None:
-    """Handle user message and generate response"""
+def handle_user_input(user_input: str, question_type: str = None, filters: dict = None) -> None:
+    """Handle user message and generate response
+
+    Args:
+        user_input: User's question text
+        question_type: Competition question type (cafe_customer, revisit_rate, restaurant_problem)
+        filters: Metadata filters for RAG search
+    """
     session = st.session_state.session
     client = st.session_state.client
     rag_client = st.session_state.rag_client
@@ -72,11 +79,24 @@ def handle_user_input(user_input: str) -> None:
         prompt = user_input
         if use_rag and rag_client.is_available():
             with st.spinner("관련 문서 검색 중..."):
-                rag_results = rag_client.query(user_input, top_k=3, threshold=0.5)
+                # Use filters if provided (for competition questions)
+                rag_results = rag_client.query(
+                    user_input,
+                    top_k=5,
+                    threshold=0.5,
+                    filters=filters
+                )
 
                 if rag_results:
                     context = format_rag_context(rag_results)
-                    prompt = f"{context}\n\n사용자 질문: {user_input}\n\n위 문서를 참고하여 답변해주세요."
+
+                    # Use specialized prompt template if question_type provided
+                    if question_type:
+                        from src.prompts import get_prompt_template
+                        template = get_prompt_template(question_type)
+                        prompt = template.format(rag_context=context)
+                    else:
+                        prompt = f"{context}\n\n사용자 질문: {user_input}\n\n위 문서를 참고하여 답변해주세요."
 
         for chunk in client.stream_generate(prompt):
             full_response += chunk
@@ -93,11 +113,22 @@ def main() -> None:
     initialize_session_state()
 
     render_header()
+
+    # Render competition question buttons
+    competition_question = render_competition_questions()
+    if competition_question:
+        handle_user_input(
+            competition_question["prompt"],
+            question_type=competition_question["question_type"],
+            filters=competition_question["filters"]
+        )
+
     settings = render_sidebar_settings()
     handle_settings(settings)
 
     render_chat_history(st.session_state.session.get_messages())
 
+    # Regular chat input
     if user_input := render_input_box():
         handle_user_input(user_input)
 

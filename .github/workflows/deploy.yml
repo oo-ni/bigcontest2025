@@ -10,18 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Free Disk Space
-        run: |
-          echo "=== Before cleanup ==="
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker system prune -af --volumes
-          echo "=== After cleanup ==="
-          df -h
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -72,17 +60,17 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            
-            cat > .env << EOF 
-            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} 
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} 
-            EOF 
+
+            cat > .env << 'EOF'
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            EOF
 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bigcontest2025-mcp:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bigcontest2025-streamlit:latest
 
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
             docker image prune -f
 
             echo "Deployment completed successfully!"

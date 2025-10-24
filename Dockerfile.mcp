@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 COPY pyproject.toml uv.lock* ./
 
 # 의존성 설치
-RUN uv sync --frozen --no-dev --no-cache || uv sync --no-dev --no-cache
+RUN uv sync --no-dev
 
 # 런타임 스테이지
 FROM python:3.11-slim

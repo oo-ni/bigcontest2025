@@ -9,8 +9,8 @@ WORKDIR /app
 # 의존성 파일만 먼저 복사 (Docker 캐싱 활용)
 COPY pyproject.toml uv.lock* ./
 
-# 의존성 설치 (프로덕션 전용, lock 파일이 있으면 사용)
-RUN uv sync --frozen --no-dev --no-cache || uv sync --no-dev --no-cache
+# 의존성 설치 (프로덕션 전용)
+RUN uv sync --no-dev
 
 # 런타임 스테이지
 FROM python:3.11-slim

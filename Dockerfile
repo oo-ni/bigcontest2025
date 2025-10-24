@@ -1,18 +1,19 @@
 # 빌드 스테이지
 FROM python:3.11-slim AS builder
 
-# uv 설치
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-
 WORKDIR /app
 
 # 의존성 파일 복사
 COPY pyproject.toml ./
 
-# uv를 사용해서 requirements.txt 생성 후 pip로 설치
-RUN uv pip compile pyproject.toml -o requirements.txt && \
-    python -m venv /app/.venv && \
-    /app/.venv/bin/pip install --no-cache-dir -r requirements.txt
+# Python 가상환경 생성 및 의존성 직접 설치
+RUN python -m venv /app/.venv && \
+    /app/.venv/bin/pip install --no-cache-dir --upgrade pip && \
+    /app/.venv/bin/pip install --no-cache-dir \
+        streamlit>=1.30.0 \
+        google-generativeai>=0.3.0 \
+        python-dotenv>=1.0.0 \
+        requests>=2.31.0
 
 # 런타임 스테이지
 FROM python:3.11-slim

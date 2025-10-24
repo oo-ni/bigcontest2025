@@ -113,7 +113,8 @@ class VectorStore:
         self,
         query: str,
         top_k: int = 5,
-        threshold: float = 0.7
+        threshold: float = 0.7,
+        filters: Optional[Dict] = None
     ) -> List[Dict]:
         """
         Search for similar documents
@@ -122,6 +123,7 @@ class VectorStore:
             query: Search query text
             top_k: Number of results to return
             threshold: Similarity threshold (0-1, higher is more similar)
+            filters: Optional metadata filters (e.g., {"업종": "카페", "지역": "서울 강남구"})
 
         Returns:
             List of results with text, metadata, and score
@@ -141,18 +143,30 @@ class VectorStore:
         # Normalize by converting to cosine similarity approximation
         similarities = 1 / (1 + distances[0])
 
-        # Filter by threshold and prepare results
+        # Filter by threshold and metadata filters
         results = []
         for idx, similarity in zip(indices[0], similarities):
             if idx >= 0 and similarity >= threshold:
+                doc_metadata = self.metadata[idx]
+
+                # Apply metadata filters
+                if filters:
+                    match = True
+                    for key, value in filters.items():
+                        if key not in doc_metadata or doc_metadata[key] != value:
+                            match = False
+                            break
+                    if not match:
+                        continue
+
                 results.append({
                     "text": self.documents[idx],
-                    "metadata": self.metadata[idx],
+                    "metadata": doc_metadata,
                     "score": float(similarity),
                     "doc_id": int(idx)
                 })
 
-        logger.info(f"Found {len(results)} results for query")
+        logger.info(f"Found {len(results)} results for query (filters: {filters})")
         return results
 
     def save(self):

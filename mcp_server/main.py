@@ -33,6 +33,7 @@ class QueryRequest(BaseModel):
     query: str
     top_k: int = 5
     threshold: float = 0.7
+    filters: Optional[dict] = None
 
 
 class QueryResponse(BaseModel):
@@ -90,7 +91,8 @@ async def query_documents(request: QueryRequest):
         results = vector_store.search(
             query=request.query,
             top_k=request.top_k,
-            threshold=request.threshold
+            threshold=request.threshold,
+            filters=request.filters
         )
 
         return QueryResponse(
